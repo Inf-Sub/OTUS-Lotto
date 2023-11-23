@@ -86,10 +86,11 @@ class Game:
         self._gamers = None
         self._current = None
         self._counts = None
+        self._counts_in_game = None
         self._kegs = generate_unique_numbers(self._num_kegs, 1, 90)
         self._current_keg = None
 
-        self.run_game()
+        # self.run()
 
     @property
     def counts(self):
@@ -99,10 +100,18 @@ class Game:
 
     @counts.setter
     def counts(self, count):
-        if count.isdigit() and int(count) > 1:
-            self._counts = int(count)
-        else:
-            raise WrongCountValue
+        if type(count) is str:
+            if count.isdigit():
+                count = int(count)
+            else:
+                raise WrongCountValue
+
+        if type(count) is int:
+            if count > 1:
+                self._counts = count
+                self._counts_in_game = count
+            else:
+                raise WrongCountValue
 
     @property
     def new_gamer(self):
@@ -132,6 +141,10 @@ class Game:
             }
         print()
 
+    def del_gamer(self):
+        self._counts_in_game -= 1
+        self.new_gamer["status"] = 2
+
     def view_card(self):
         print(f'Новый бочонок: {self._current_keg} (осталось {len(self._kegs)})\n')
         for num in range(self.counts):
@@ -159,8 +172,14 @@ class Game:
             self._current = num
 
             if self.new_gamer["status"] == 0:
-                # print(f'type: {type(self.new_gamer["type"])}')
+                '''If the player is in the game'''
+                if self._counts_in_game == 1:
+                    '''If there's only one left'''
+                    self.new_gamer["status"] = 1
+                    return 1
+
                 if self.new_gamer["type"] == 1:
+                    '''If human'''
                     user_answer = input(
                         f'Игрок: {self.new_gamer["name"]}. Зачеркнуть цифру {self._current_keg}? (y/n) '
                     ).lower().strip()
@@ -168,18 +187,20 @@ class Game:
                             (user_answer == 'y' and not self._current_keg in self.new_gamer["card"])
                             or (user_answer != 'y' and self._current_keg in self.new_gamer["card"])
                     ):
-                        self.new_gamer["status"] = 2
+                        '''If the choice was not successful'''
+                        self.del_gamer()
                         continue
 
                 if self._current_keg in self.new_gamer["card"]:
                     self.new_gamer["card"].cross_num(self._current_keg)
                     if self.new_gamer["card"].closed():
+                        '''If the card is empty'''
                         self.new_gamer["status"] = 1
                         return 1
 
                 self.new_gamer["status"] = 0
 
-    def run_game(self):
+    def run(self):
         self.add_gamers()
         while True:
             result = self.play_round()
@@ -189,5 +210,6 @@ class Game:
 
 
 if __name__ == '__main__':
-    Game()
+    new_game = Game()
+    new_game.run()
 
