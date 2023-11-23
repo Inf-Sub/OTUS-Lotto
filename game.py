@@ -161,7 +161,9 @@ class Game:
             if self.new_gamer["status"] == 0:
                 # print(f'type: {type(self.new_gamer["type"])}')
                 if self.new_gamer["type"] == 1:
-                    user_answer = input(f'Игрок: {self.new_gamer["name"]}. Зачеркнуть цифру? (y/n)').lower().strip()
+                    user_answer = input(
+                        f'Игрок: {self.new_gamer["name"]}. Зачеркнуть цифру {self._current_keg}? (y/n) '
+                    ).lower().strip()
                     if (
                             (user_answer == 'y' and not self._current_keg in self.new_gamer["card"])
                             or (user_answer != 'y' and self._current_keg in self.new_gamer["card"])
