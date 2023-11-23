@@ -18,26 +18,15 @@ def test_success_generate_unique_numbers(src, exp_result):
 
 
 @pytest.mark.parametrize(
-    'src',
+    'src, exp_exception',
     [
-        ([5, 1, 1]),
-        ([15, 1, 3]),
+        ([5, 1, 1], ValueError),
+        ([15, 1, 3], ValueError),
+        (['5', 1, 1], TypeError),
+        ([15, '1', 3], TypeError),
     ]
 )
-def test_value_error_generate_unique_numbers(src):
-    """Должно возникнуть исключение с неправильным значением."""
-    with pytest.raises(ValueError):
-        generate_unique_numbers(*src)
-
-
-@pytest.mark.parametrize(
-    'src',
-    [
-        (['5', 1, 1]),
-        ([15, '1', 3]),
-    ]
-)
-def test_type_error_generate_unique_numbers(src):
-    """Должно возникнуть исключение с неправильным значением."""
-    with pytest.raises(TypeError):
+def test_error_generate_unique_numbers(src, exp_exception):
+    """Должно возникнуть исключение."""
+    with pytest.raises(exp_exception):
         generate_unique_numbers(*src)
