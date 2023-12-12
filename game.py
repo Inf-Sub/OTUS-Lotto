@@ -23,13 +23,17 @@ def generate_unique_numbers(count, min_bound, max_bound):
 class Card:
 
     def __init__(self):
-        self._line_len = 26
+        self._line_len = None
         self._rows = 3
         self._cols = 9
         self._nums_in_row = 5
         self._data = None
         self._empty_num = 0
         self._crossed_num = -1
+
+        # количество столбцов с цифрами * количество знаков в числе (2 знака) + 1 знак разделитель (итого 3 знака) - 1
+        # (разделителей на 1 меньше чем чисел)
+        self._line_len = self._cols * 3 - 1
 
         uniques_count = self._nums_in_row * self._rows
         uniques = generate_unique_numbers(uniques_count, 1, 90)
@@ -66,7 +70,7 @@ class Card:
     def __contains__(self, item):
         return item in self._data
 
-    def cross_num(self, num):
+    def cross_num(self, num) -> None:
         for index, item in enumerate(self._data):
             if item == num:
                 self._data[index] = self._crossed_num
@@ -114,7 +118,7 @@ class Game:
                 raise WrongCountValue
 
     @property
-    def new_gamer(self):
+    def new_gamer(self) -> dict:
         if self._gamers is None:
             self._gamers = {}
         return self._gamers[self._current]
@@ -151,9 +155,9 @@ class Game:
             self._current = num
             if self.new_gamer["status"] == 0:
                 name = f' Карточка {self.new_gamer["name"]} '
-                if not (len(name)/2).is_integer():
+                if not (len(name) / 2).is_integer():
                     name += '-'
-                line = f'{"-" * (int((self._line_len - len(name))/2))}'
+                line = f'{"-" * (int((self._line_len - len(name)) / 2))}'
                 print(
                     f'{line}{name}{line}\n'
                     f'{self.new_gamer["card"]}\n'
@@ -212,4 +216,3 @@ class Game:
 if __name__ == '__main__':
     new_game = Game()
     new_game.run()
-
